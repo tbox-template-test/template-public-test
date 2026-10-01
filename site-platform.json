@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "platform": "web",
+  "framework": "astro",
+  "standardsFamily": "TBOX Web Platform",
+  "standardsVersion": 1,
+  "productionDomain": "TODO",
+  "stagingDomain": "TODO",
+  "deploymentTarget": "TODO",
+  "analyticsOwner": "TODO"
+}

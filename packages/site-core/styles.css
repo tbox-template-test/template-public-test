@@ -1,0 +1,80 @@
+/*
+ * site-core
+ * Cross-site web primitives only. No client branding belongs here.
+ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  width: 100%;
+  min-width: 0;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  width: 100%;
+  min-width: 0;
+}
+
+img,
+picture,
+video,
+canvas,
+svg,
+iframe {
+  display: block;
+  max-width: 100%;
+}
+
+img,
+video {
+  height: auto;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  max-width: 100%;
+}
+
+p,
+li,
+dd,
+figcaption,
+blockquote,
+a {
+  overflow-wrap: anywhere;
+}
+
+.container {
+  width: min(100% - 2rem, 75rem);
+  margin-inline: auto;
+}
+
+.container > *,
+.grid > *,
+.cluster > *,
+.stack > * {
+  min-width: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1rem;
+}
+
+table {
+  max-width: 100%;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}

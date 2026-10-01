@@ -1,0 +1,18 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    ignore:
+      # @astrojs/check 0.9.10 accepts typescript ^5 || ^6 only. TypeScript 7
+      # breaks `npm ci` (proved 2026-09-30: Dependabot's 6 -> 7 PR failed
+      # Standards). Remove once @astrojs/check supports 7.
+      - dependency-name: typescript
+        versions: [">=7"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

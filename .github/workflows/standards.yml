@@ -1,0 +1,104 @@
+name: Standards
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  standards:
+    name: Standards
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify standards contract
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+
+          const requiredFiles = [
+            "site-platform.json",
+            "AGENTS.md",
+            "CLAUDE.md",
+            "scripts/check-horizontal-overflow.mjs",
+            "docs/PLATFORM_STANDARDS.md",
+          ];
+
+          // Platform-only material. It lives in the private platform repository
+          // and must never appear in the template or a client site: whatever is
+          // in the template lands in every client repository's first commit,
+          // and client repositories are public.
+          const platformOnly = [
+            "site-inventory.json",
+            "docs/PLATFORM_ARCHITECTURE.md",
+            "docs/NEW_SITE.md",
+            "docs/workflows",
+            "docs/future",
+          ];
+
+          const failures = [];
+
+          for (const file of requiredFiles) {
+            if (!fs.existsSync(file)) failures.push(`Missing required file: ${file}`);
+          }
+
+          for (const path of platformOnly) {
+            if (fs.existsSync(path)) failures.push(`Platform-only path must not be in this repository: ${path}`);
+          }
+
+          if (!fs.existsSync("package.json")) {
+            failures.push("Missing package.json");
+          } else {
+            const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+            for (const script of ["check", "build", "test", "standards:responsive", "standards"]) {
+              if (!pkg.scripts?.[script]) failures.push(`Missing required npm script: ${script}`);
+            }
+          }
+
+          if (fs.existsSync("site-platform.json")) {
+            const meta = JSON.parse(fs.readFileSync("site-platform.json", "utf8"));
+            if (meta.schema !== 1) failures.push("site-platform.json must use schema 1");
+            if (meta.platform !== "web") failures.push("site-platform.json platform must be web");
+            if (meta.framework !== "astro") failures.push("site-platform.json framework must be astro");
+            if (!meta.standardsFamily) failures.push("site-platform.json must name standardsFamily");
+            if (!Number.isInteger(meta.standardsVersion)) failures.push("site-platform.json must declare an integer standardsVersion");
+          }
+
+          if (failures.length) {
+            console.error("\nStandards contract FAILED:\n");
+            for (const failure of failures) console.error("- " + failure);
+            process.exit(1);
+          }
+
+          console.log("Standards contract passed.");
+          NODE
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            echo "::warning::package-lock.json is missing; using npm install. Commit a lockfile before production launch."
+            npm install --no-audit --no-fund
+          fi
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run standards
+        run: npm run standards

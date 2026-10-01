@@ -1,0 +1,14 @@
+{
+  "name": "site-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared cross-site web primitives for sites built from this template",
+  "exports": {
+    "./styles.css": "./styles.css"
+  },
+  "files": [
+    "styles.css",
+    "README.md"
+  ]
+}
