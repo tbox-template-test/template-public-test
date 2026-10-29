@@ -13,7 +13,7 @@
     "standards": "npm run check && npm test && npm run build && npm run standards:responsive"
   },
   "dependencies": {
-    "astro": "^7.3.3"
+    "astro": "^7.4.2"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
